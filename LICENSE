@@ -1,0 +1,120 @@
+PYTHONBOTS CORE — LICENCE
+
+This repository publishes the source of pythonbots-core so that anyone can read it, and so that
+each release is a dated, public fact. Publication grants no rights: no licence to run, copy,
+modify or redistribute the software is granted by this repository, by PyPI, or by any other
+channel. A licence is issued only with an order, on the terms below, and is recorded in that
+order's LICENSE-ADDENDUM.
+
+Third-party components are listed in NOTICE and keep their own licences.
+
+----------------------------------------------------------------------
+
+PYTHONBOTS CORE LICENSE — version 0.1 (draft)
+
+Copyright (c) 2026 Luca Sacchi Ricciardi ("Licensor").
+
+1. DEFINITIONS
+   "Core" means the Python distribution "pythonbots-core", delivered as the wheel file
+   in "wheels/" of the Delivered Work and installed from it, including its files, version,
+   manifest and migrations, as identified in the Addendum by version, manifest fingerprint
+   and wheel sha256.
+   "Delivered Work" means the software delivered by the Licensor to the
+   Licensee under the order identified in the Addendum — that order and the
+   files attached to its delivery — together with every later evolution of
+   that same software made by or for the Licensee outside the Core.
+   "Licensee" means the person or entity identified in the Addendum.
+   "Instance" means one running copy of the Delivered Work, on any machine,
+   for any environment (production, staging, test).
+
+2. GRANT
+   Subject to these terms, the Licensor grants the Licensee a perpetual,
+   worldwide, non-exclusive, non-transferable (except under Section 6)
+   licence to:
+   (a) run the Core solely as a component of the Delivered Work, in any
+       number of Instances;
+   (b) copy the Core solely for backup and deployment of the Delivered Work;
+   (c) read the Core's source for the purpose of operating, configuring and
+       extending the Delivered Work outside the Core.
+
+3. RESTRICTIONS
+   The Licensee shall not, and shall not permit any third party to:
+   (a) modify, adapt, translate or create derivative works of the Core, in
+       whole or in part;
+   (b) distribute, publish, sublicense, rent, lend or otherwise make the
+       Core available to any third party, except to contractors acting
+       solely on the Licensee's behalf to operate or extend the Delivered
+       Work, who shall be bound by these terms;
+   (c) use the Core, in whole or in part, in or as a basis for any software
+       other than the Delivered Work, including any other bot of the
+       Licensee, whether commercial or not;
+   (d) remove or alter any copyright, licence or version notice in the Core.
+   For clarity: everything in the Delivered Work outside the Core is owned
+   by the Licensee without restriction under this licence.
+
+4. UPDATES AND SUPPORT
+   (a) Corrective updates of the Core are provided at no charge until the
+       later of (i) the end-of-life date of the Core's major version, which
+       is twenty-four (24) months from that major version's release and is
+       stated in the Core itself (VERSION file, start-up log), and (ii)
+       twelve (12) months from delivery of the Delivered Work. The date
+       that applies to an order is stated in its Addendum. A corrective
+       update is one that restores behaviour the Core's changelog declares, or
+       compatibility with a platform or runtime version listed in the
+       Core's compatibility matrix; anything else is new functionality.
+   (b) Corrective updates are delivered as a new release of the Core (a new wheel
+       file) with its migrations, to be applied by rebuilding the deployment
+       delivered with the Delivered Work.
+   (c) Support (questions, configuration, diagnosis) is provided for six (6)
+       months from delivery and may be extended for a fee.
+   (d) New functionality of the Core (a later major version) is not included.
+   (e) If, when the Licensee requests assistance, the Core is found to have
+       been modified (by its manifest or otherwise), the Licensor's
+       obligations under this Section end. The licence in Section 2 is not
+       affected.
+
+5. CONTINUITY (SURVIVAL) CLAUSE
+   If the Licensor (i) ceases business, or (ii) fails to respond to a
+   written request for a corrective update sent to the contact stated in the
+   Addendum within ninety (90) days, the Licensee obtains, from that moment,
+   the additional right to modify the Core, and to have it modified by
+   contractors on its behalf, solely for the internal use of the Delivered
+   Work. Section 3(b) and 3(c) remain in force.
+
+6. TRANSFER
+   This licence may be transferred only together with the Delivered Work
+   and the business in which it is used, and only in its entirety; the
+   transferee is bound by these terms.
+
+7. NO WARRANTY; LIABILITY
+   The Core is provided "as is", without warranty of any kind. To the
+   extent permitted by law, the Licensor's liability under this licence is
+   limited to the amount paid for the order identified in the Addendum.
+
+8. TERMINATION
+   The licence ends automatically if the Licensee breaches Section 3 and
+   does not cure the breach within thirty (30) days of written notice.
+   Sections 3, 7 and 9 survive termination.
+
+9. LAW AND FORUM
+   This licence is governed by the laws of Italy. The courts of Milan,
+   Italy, have exclusive jurisdiction, without prejudice to mandatory
+   consumer-protection rules where applicable. The English text prevails.
+
+10. RELATION TO THE MARKETPLACE
+   This licence is the statement, made on the seller's gig page and in the
+   delivered files, that ownership of the Core is NOT transferred to the
+   buyer under the marketplace's default terms. Ownership of everything
+   outside the Core is transferred to the buyer as those terms provide.
+
+11. PLATFORM APPLICATION AND CREDENTIALS
+   The application registered with the messaging platform (the "Platform
+   Application"), and the credentials issued for it, belong to the Licensee.
+   The Licensee registers the Platform Application on its own developer
+   account or team before delivery begins, and accepts that platform's
+   developer terms in its own name. No credential of the Platform
+   Application is included in the Delivered Work.
+   Where the Licensor also operates the Delivered Work on the Licensee's
+   behalf, the Licensor does so as the Licensee's service provider, using
+   the Platform Application and its data only for the Licensee and at its
+   direction, and for no other purpose.

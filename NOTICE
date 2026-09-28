@@ -1,0 +1,8 @@
+pythonbots-core
+Copyright (c) 2026 Luca Sacchi Ricciardi
+
+This package depends on third-party software that is not included in this repository and keeps
+its own licence:
+
+- PyNaCl (https://github.com/pyca/pynacl) — Apache License 2.0
+- PyYAML (https://github.com/yaml/pyyaml) — MIT License

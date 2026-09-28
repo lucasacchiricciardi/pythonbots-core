@@ -1,0 +1,81 @@
+# Publishes a tagged release to PyPI through Trusted Publishing (OIDC): no API token anywhere.
+#
+# What keeps this honest:
+# - the tag must equal the version declared in pythonbots_core/VERSION, or the build stops;
+# - the wheel is built reproducibly: SOURCE_DATE_EPOCH is the release day declared in VERSION,
+#   and setuptools is pinned in pyproject.toml — so this wheel and the one built from the same
+#   source elsewhere have the same sha256, byte for byte;
+# - the built wheel is installed in a clean job and its own integrity checks run before publishing;
+# - the `pypi` environment requires a reviewer: a pushed tag never publishes on its own.
+name: publish
+
+on:
+  push:
+    tags: ["v[0-9]+.[0-9]+.[0-9]+"]
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: the tag is the declared version
+        run: |
+          declared="v$(python -c 'import pythonbots_core as p; print(p.__version__)')"
+          test "$GITHUB_REF_NAME" = "$declared" || { echo "tag $GITHUB_REF_NAME != VERSION $declared"; exit 1; }
+      - name: build, reproducibly
+        run: |
+          python -m pip install --upgrade pip build
+          export SOURCE_DATE_EPOCH=$(python - <<'PY'
+          from datetime import datetime, timezone
+          import pythonbots_core as p
+          from pythonbots_core.manifesto import stato
+          r = stato(p.cartella())["rilasciata_il"]
+          d = datetime.strptime(r, "%Y-%m-%d").replace(tzinfo=timezone.utc)
+          print(int(d.timestamp()))
+          PY
+          )
+          echo "SOURCE_DATE_EPOCH=$SOURCE_DATE_EPOCH"
+          python -m build
+          sha256sum dist/*
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist/
+
+  smoke:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist/
+      - name: the built wheel installs, imports, and checks itself
+        run: |
+          python -m pip install --upgrade pip pytest
+          python -m pip install dist/*.whl
+          cd tests && python -m pytest -q test_pacchetto.py
+
+  publish:
+    needs: [build, smoke]
+    runs-on: ubuntu-latest
+    environment: pypi
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist/
+      - uses: pypa/gh-action-pypi-publish@release/v1

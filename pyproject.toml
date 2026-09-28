@@ -1,0 +1,33 @@
+[build-system]
+requires = ["setuptools==84.0.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pythonbots-core"
+dynamic = ["version"]
+description = "Core library of PythonBots Discord bots: source-available, use licence."
+requires-python = ">=3.12"
+authors = [{name = "Luca Sacchi Ricciardi"}]
+license = "LicenseRef-PythonBots-Core"
+license-files = ["LICENSE", "NOTICE"]
+classifiers = ["Programming Language :: Python :: 3", "Programming Language :: Python :: 3.12",
+               "Operating System :: OS Independent"]
+
+dependencies = ["pynacl>=1.5", "pyyaml>=6"]
+
+[project.urls]
+Source = "https://github.com/lucasacchiricciardi/pythonbots-core"
+Changelog = "https://github.com/lucasacchiricciardi/pythonbots-core/blob/main/CHANGELOG.md"
+
+[tool.setuptools.dynamic]
+version = {attr = "pythonbots_core.__version__"}
+
+[tool.setuptools.packages.find]
+include = ["pythonbots_core*"]
+
+[tool.setuptools.package-data]
+pythonbots_core = ["VERSION", "MANIFEST", "migrations/*.sql", "strings/*.yaml"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q --strict-markers"
