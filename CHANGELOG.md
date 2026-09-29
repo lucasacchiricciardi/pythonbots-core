@@ -5,6 +5,14 @@ All notable changes to `pythonbots-core` are documented here. The format follows
 
 ## [unreleased]
 
+## [0.1.2] - 2026-09-29
+
+### Added
+
+- Terms of service page (`/termini`), filled from a template the client owns in
+  `bot/documenti/termini.md` and ships as a draft to be reviewed by a lawyer.
+- Order section `documenti` to switch the privacy notice and the terms page on or off.
+
 ## [0.1.1] - 2026-09-29
 
 ### Fixed

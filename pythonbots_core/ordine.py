@@ -13,6 +13,8 @@ CAMPI = ("ordine", "licenziatario", "bot", "contatto", "informativa", "team", "a
 
 CAMPI_NUMERICI = {"team": "di Developer Team", "applicazione": "di applicazione Discord"}
 
+DOCUMENTI = ("informativa", "termini")
+
 from pythonbots_core.informativa import CAMPI_TITOLARE  # noqa: E402
 
 
@@ -38,6 +40,17 @@ def problemi(o: dict) -> list[str]:
         if isinstance(v := o.get(c), str) and v.strip() and not v.strip().isdigit():
             p.append(f"`{c}`: {v!r} non e' un id numerico {cosa} (solo cifre). "
                      f"Si legge nel Developer Portal, non e' il nome")
+
+    if "documenti" in o:
+        d = o["documenti"]
+        if not isinstance(d, dict):
+            p.append("`documenti`: deve essere una mappa (informativa, termini)")
+        else:
+            for k, v in d.items():
+                if k not in DOCUMENTI:
+                    p.append(f"`documenti.{k}`: chiave sconosciuta — sono {', '.join(DOCUMENTI)}")
+                elif not isinstance(v, bool):
+                    p.append(f"`documenti.{k}`: deve essere true o false, non {v!r}")
     return p
 
 

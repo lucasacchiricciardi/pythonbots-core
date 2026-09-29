@@ -102,7 +102,9 @@ def md_a_html(testo: str, titolo: str) -> str:
               "cambia insieme al codice.</footer>\n</html>\n")
 
 
-PAGINE = {"informativa": "Informativa privacy", "supporto": "Supporto"}
+PAGINE = {"informativa": "Informativa privacy", "supporto": "Supporto", "termini": "Termini di servizio"}
+
+MODELLO_TERMINI = ("bot", "documenti", "termini.md")
 
 
 def indice(nome_app: str, pagine: dict[str, str]) -> str:
@@ -132,16 +134,33 @@ def pagina_supporto(nome_app: str, contatto: str) -> str:
     ])
 
 
-def genera_pagine(destinazione, nome_app: str, informativa_md: str,
-                  contatto: str) -> list[str]:
+def termini(modello: str, ordine: dict) -> str:
+    """The terms of service template filled with the order data; unknown placeholders stop the build."""
+    import string
+    t = ordine.get("titolare", {})
+    valori = {"bot": ordine["bot"], "contatto": ordine["contatto"], "informativa": ordine["informativa"],
+              "titolare_nome": t.get("nome", ""), "titolare_indirizzo": t.get("indirizzo", ""),
+              "titolare_email": t.get("email", "")}
+    ignoti = sorted({c for _, c, _, _ in string.Formatter().parse(modello) if c and c not in valori})
+    if ignoti:
+        raise ValueError(f"bot/documenti/termini.md: segnaposto sconosciuti {ignoti} — quelli "
+                         f"disponibili sono {sorted(valori)}")
+    return modello.format_map(valori)
+
+
+def genera_pagine(destinazione, nome_app: str, informativa_md: str | None,
+                  contatto: str, termini_md: str | None = None) -> list[str]:
     """Write the HTML pages the documents container will serve."""
     from pathlib import Path as _P
 
     d = _P(destinazione)
     d.mkdir(parents=True, exist_ok=True)
-    testi = {"informativa": informativa_md,
-             "supporto": pagina_supporto(nome_app, contatto),
-             "index": indice(nome_app, PAGINE)}
+    testi = {"supporto": pagina_supporto(nome_app, contatto)}
+    if informativa_md is not None:
+        testi["informativa"] = informativa_md
+    if termini_md is not None:
+        testi["termini"] = termini_md
+    testi["index"] = indice(nome_app, {n: t for n, t in PAGINE.items() if n in testi})
     for nome, md in testi.items():
         titolo = PAGINE.get(nome, nome_app)
         (d / f"{nome}.html").write_text(md_a_html(md, titolo), encoding="utf-8")
@@ -156,10 +175,19 @@ def genera_da_albero(albero, ordine: dict, destinazione) -> list[str]:
     from pythonbots_core.instradamento import Registro
 
     registro = Registro.da_cartella(_P(albero) / "bot" / "handlers")
+    accesi = {"informativa": True, "termini": True, **(ordine.get("documenti") or {})}
     informativa_md = _genera_informativa(
         registro.dichiarazioni(), ordine["bot"], ordine["contatto"],
-        ordine.get("titolare", {}))
-    return genera_pagine(destinazione, ordine["bot"], informativa_md, ordine["contatto"])
+        ordine.get("titolare", {})) if accesi["informativa"] else None
+    termini_md = None
+    if accesi["termini"]:
+        modello = _P(albero).joinpath(*MODELLO_TERMINI)
+        if not modello.is_file():
+            raise FileNotFoundError(
+                "manca bot/documenti/termini.md, il modello dei termini di servizio. Se i termini li "
+                "pubblichi altrove, scrivi nell'ordine `documenti:` con `termini: false`")
+        termini_md = termini(modello.read_text(encoding="utf-8"), ordine)
+    return genera_pagine(destinazione, ordine["bot"], informativa_md, ordine["contatto"], termini_md)
 
 
 def main(argv=None) -> int:
