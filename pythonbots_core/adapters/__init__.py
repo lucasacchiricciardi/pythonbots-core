@@ -6,6 +6,8 @@ from dataclasses import dataclass, replace
 
 from pythonbots_core.messaggio import Azione, Messaggio, Risposta
 
+CHIAVE_OCCUPATO = "core.occupato"
+
 
 @dataclass(frozen=True)
 class Capacita:
@@ -47,6 +49,21 @@ def _vuole_dati(gestisci) -> bool:
         return False
 
 
+def _chiama(registro, gestisci, messaggio, r, deposito) -> None:
+    """Call the handler, with data if it asks for it."""
+    if not _vuole_dati(gestisci):
+        gestisci(messaggio, r)
+        return
+    from pythonbots_core.dati import Dati
+    dich = registro.dichiarazione(messaggio.comando)
+    if deposito is None or dich is None:
+        nome = dich["nome"] if dich else messaggio.comando
+        raise RuntimeError(f"l'handler `{nome}` chiede `dati` (terzo parametro di `gestisci`), "
+                           f"ma questo cammino non ha un deposito"
+                           + ("" if dich else " ne' una dichiarazione"))
+    gestisci(messaggio, r, Dati(deposito, dich, registro.dichiarazioni(), messaggio.mittente))
+
+
 def instrada(registro, messaggio: Messaggio, capacita: Capacita, stringhe,
              battito=None, deposito=None) -> list[Azione]:
     """One event to the actions already fitted to the platform's capabilities."""
@@ -56,17 +73,15 @@ def instrada(registro, messaggio: Messaggio, capacita: Capacita, stringhe,
     if battito is not None:
         battito.ricevuto()
     r = Risposta()
-    if _vuole_dati(gestisci):
-        from pythonbots_core.dati import Dati
-        dich = registro.dichiarazione(messaggio.comando)
-        if deposito is None or dich is None:
-            nome = dich["nome"] if dich else messaggio.comando
-            raise RuntimeError(f"l'handler `{nome}` chiede `dati` (terzo parametro di `gestisci`), "
-                               f"ma questo cammino non ha un deposito"
-                               + ("" if dich else " ne' una dichiarazione"))
-        gestisci(messaggio, r, Dati(deposito, dich, registro.dichiarazioni(), messaggio.mittente))
-    else:
-        gestisci(messaggio, r)
+    try:
+        _chiama(registro, gestisci, messaggio, r, deposito)
+    except Exception as e:                                  # noqa: BLE001 — si rilancia tutto il resto
+        from pythonbots_core.deposito import occupato
+        if not occupato(e):
+            raise
+        r = Risposta()
+        r.privata(CHIAVE_OCCUPATO)
+        return [_traduci_azione(_degrada(a, capacita), stringhe) for a in r.azioni]
     azioni = [_traduci_azione(_degrada(a, capacita), stringhe) for a in r.azioni]
     if battito is not None:
         battito.riuscito()

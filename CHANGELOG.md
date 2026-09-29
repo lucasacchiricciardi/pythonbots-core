@@ -5,6 +5,15 @@ All notable changes to `pythonbots-core` are documented here. The format follows
 
 ## [unreleased]
 
+## [0.1.4] - 2026-09-29
+
+### Fixed
+
+- Answer a contended write within Discord's three seconds: the database waits at most 2 seconds for
+  a lock (it was 5) and the user gets a private "busy, try again" reply instead of an error.
+- Readers no longer wait for writers: the database runs in WAL mode. Back up the whole data folder,
+  including `bot.db-wal`.
+
 ## [0.1.3] - 2026-09-29
 
 ### Added

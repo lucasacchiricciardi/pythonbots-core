@@ -19,6 +19,16 @@ def campi_da_api(dichiarazioni, tabella: str) -> set[str] | None:
     return None
 
 
+ATTESA_LOCK = 2.0
+
+
+def occupato(errore: BaseException) -> bool:
+    """True if the error is a contended lock (BUSY or LOCKED), and only then."""
+    codice = getattr(errore, "sqlite_errorcode", None)
+    return (isinstance(errore, sqlite3.OperationalError) and codice is not None
+            and codice & 0xFF in (sqlite3.SQLITE_BUSY, sqlite3.SQLITE_LOCKED))
+
+
 class Deposito:
     """Opens the database with the declared dialect. Nothing else."""
 
@@ -26,8 +36,9 @@ class Deposito:
 
     def __init__(self, percorso: Path):
         self.percorso = percorso
-        self._c = sqlite3.connect(percorso)
+        self._c = sqlite3.connect(percorso, timeout=ATTESA_LOCK)
         self._c.execute("PRAGMA foreign_keys = ON")
+        self._c.execute("PRAGMA journal_mode = WAL")
 
     def esegui(self, sql: str, parametri: tuple = ()) -> None:
         self._c.execute(sql, parametri)

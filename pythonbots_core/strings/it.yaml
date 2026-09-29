@@ -1,1 +1,3 @@
 core.comando-sconosciuto: "Comando non riconosciuto."
+
+core.occupato: "Il bot è occupato in questo momento: riprova fra qualche secondo."
