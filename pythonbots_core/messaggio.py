@@ -22,6 +22,7 @@ class Azione:
     opzioni: tuple = ()
     testo_degradato: str = ""
     testo: str = ""
+    valori: tuple = ()
 
 
 class Risposta:
@@ -30,15 +31,15 @@ class Risposta:
     def __init__(self) -> None:
         self._azioni: list[Azione] = []
 
-    def testo(self, chiave: str) -> None:
-        self._azioni.append(Azione(chiave))
+    def testo(self, chiave: str, **valori) -> None:
+        self._azioni.append(Azione(chiave, valori=tuple(sorted(valori.items()))))
 
-    def privata(self, chiave: str) -> None:
+    def privata(self, chiave: str, **valori) -> None:
         """Reply privately; the form for anything that concerns one person's data."""
-        self._azioni.append(Azione(chiave, privata=True))
+        self._azioni.append(Azione(chiave, privata=True, valori=tuple(sorted(valori.items()))))
 
-    def pulsanti(self, chiave: str, opzioni) -> None:
-        self._azioni.append(Azione(chiave, opzioni=tuple(opzioni)))
+    def pulsanti(self, chiave: str, opzioni, **valori) -> None:
+        self._azioni.append(Azione(chiave, opzioni=tuple(opzioni), valori=tuple(sorted(valori.items()))))
 
     def fatto(self, chiave: str, testo: str, privata: bool = True) -> None:
         """A fact rather than a phrase; the text is computed, not translated."""

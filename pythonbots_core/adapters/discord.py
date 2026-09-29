@@ -41,7 +41,7 @@ class Discord:
         except (BadSignatureError, ValueError) as e:
             raise FirmaNonValida("firma non valida") from e
 
-    def ricevi(self, registro, corpo: bytes, testate, stringhe, battito=None) -> dict:
+    def ricevi(self, registro, corpo: bytes, testate, stringhe, battito=None, deposito=None) -> dict:
         """One Discord request to the response to return; raises when it is not Discord's."""
         self._controlla_firma(corpo, testate)
 
@@ -51,7 +51,7 @@ class Discord:
             return PONG
 
         messaggio = self._traduci(evento)
-        azioni = instrada(registro, messaggio, self.capacita, stringhe, battito)
+        azioni = instrada(registro, messaggio, self.capacita, stringhe, battito, deposito)
         if not azioni:
             return self._risposta(stringhe.testo(CHIAVE_NON_MIO), privata=True)
 

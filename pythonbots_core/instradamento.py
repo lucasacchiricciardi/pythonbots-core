@@ -33,6 +33,13 @@ class Registro:
         """The string keys declared by the loaded handlers."""
         return frozenset(self._chiavi)
 
+    def dichiarazione(self, comando: str) -> dict | None:
+        """The declaration of the handler for this command, or None."""
+        voce = self._per_trigger.get(comando)
+        if voce is None:
+            return None
+        return next((d for d in self._dichiarazioni if d.get("nome") == voce[0]), None)
+
     def cerca(self, comando: str):
         """The handler for this command, or None."""
         voce = self._per_trigger.get(comando)

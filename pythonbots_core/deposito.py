@@ -94,11 +94,14 @@ def applica_catena(deposito: Deposito, cartella: Path, registro: str) -> list[st
     return applicate
 
 
-def avvia(albero: Path, db: Path) -> dict:
+def avvia(albero: Path, db: Path, core: Path | None = None) -> dict:
     """Bot start-up; the core's migration chain first, then the client's."""
+    if core is None:
+        from pythonbots_core import cartella
+        core = cartella() / "migrations"
     ordine: list[str] = []
     with Deposito(db) as d:
-        core = applica_catena(d, albero / "pythonbots_core" / "migrations", REGISTRO_CORE)
+        core = applica_catena(d, core, REGISTRO_CORE)
         ordine.append("core")
         bot = applica_catena(d, albero / "bot" / "migrations", REGISTRO_BOT)
         ordine.append("bot")

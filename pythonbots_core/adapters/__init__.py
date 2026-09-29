@@ -1,7 +1,8 @@
 """Platform adapters, translating events and actions in both directions."""
 from __future__ import annotations
 
-from dataclasses import dataclass
+import inspect
+from dataclasses import dataclass, replace
 
 from pythonbots_core.messaggio import Azione, Messaggio, Risposta
 
@@ -16,11 +17,9 @@ class Capacita:
 def _degrada(a: Azione, c: Capacita) -> Azione:
     """Fit an action into what the platform can do."""
     if a.opzioni and not c.pulsanti:
-        return Azione(a.chiave, privata=a.privata, opzioni=(),
-                      testo_degradato=" · ".join(a.opzioni))
+        return replace(a, opzioni=(), testo_degradato=" · ".join(a.opzioni))
     if a.privata and not c.privato:
-        return Azione(a.chiave, privata=False, opzioni=a.opzioni,
-                      testo_degradato=a.testo_degradato)
+        return replace(a, privata=False)
     return a
 
 
@@ -29,14 +28,27 @@ def _traduci_azione(a: Azione, stringhe) -> Azione:
     if a.testo:
         return a
     testo = stringhe.testo(a.chiave)
+    if a.valori:
+        try:
+            testo = testo.format_map(dict(a.valori))
+        except KeyError as e:
+            raise KeyError(f"la stringa `{a.chiave}` usa il segnaposto {e} e l'handler non gli ha "
+                           f"dato un valore (ha dato: {', '.join(k for k, _ in a.valori)})") from None
     if a.testo_degradato:
         testo = f"{testo}\n{a.testo_degradato}"
-    return Azione(a.chiave, privata=a.privata, opzioni=a.opzioni,
-                  testo_degradato=a.testo_degradato, testo=testo)
+    return replace(a, testo=testo)
+
+
+def _vuole_dati(gestisci) -> bool:
+    """Whether the handler asks for data with a third parameter."""
+    try:
+        return len(inspect.signature(gestisci).parameters) >= 3
+    except (TypeError, ValueError):
+        return False
 
 
 def instrada(registro, messaggio: Messaggio, capacita: Capacita, stringhe,
-             battito=None) -> list[Azione]:
+             battito=None, deposito=None) -> list[Azione]:
     """One event to the actions already fitted to the platform's capabilities."""
     gestisci = registro.cerca(messaggio.comando)
     if gestisci is None:
@@ -44,7 +56,17 @@ def instrada(registro, messaggio: Messaggio, capacita: Capacita, stringhe,
     if battito is not None:
         battito.ricevuto()
     r = Risposta()
-    gestisci(messaggio, r)
+    if _vuole_dati(gestisci):
+        from pythonbots_core.dati import Dati
+        dich = registro.dichiarazione(messaggio.comando)
+        if deposito is None or dich is None:
+            nome = dich["nome"] if dich else messaggio.comando
+            raise RuntimeError(f"l'handler `{nome}` chiede `dati` (terzo parametro di `gestisci`), "
+                               f"ma questo cammino non ha un deposito"
+                               + ("" if dich else " ne' una dichiarazione"))
+        gestisci(messaggio, r, Dati(deposito, dich, registro.dichiarazioni(), messaggio.mittente))
+    else:
+        gestisci(messaggio, r)
     azioni = [_traduci_azione(_degrada(a, capacita), stringhe) for a in r.azioni]
     if battito is not None:
         battito.riuscito()

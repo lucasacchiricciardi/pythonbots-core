@@ -5,6 +5,23 @@ All notable changes to `pythonbots-core` are documented here. The format follows
 
 ## [unreleased]
 
+## [0.1.3] - 2026-09-29
+
+### Added
+
+- Handlers can store data: `gestisci(messaggio, risposta, dati)` receives access to the handler's own
+  tables, with Discord identifiers pseudonymised on write and in filters. Two-parameter handlers are
+  unchanged.
+- `/i-miei-dati` shows and `/cancellami` deletes the data every handler keeps on the person asking.
+- Reply texts take values: `risposta.testo(chiave, quanti=3)` fills `{quanti}`.
+- The fake adapters accept a `deposito`, and use an in-memory database without one.
+
+### Fixed
+
+- Apply the core's database migrations from the installed package: a delivered project has no
+  `pythonbots_core/` folder, and the core tables were silently not created.
+- The delivered rights texts no longer contain one bot's privacy notice URL.
+
 ## [0.1.2] - 2026-09-29
 
 ### Added
