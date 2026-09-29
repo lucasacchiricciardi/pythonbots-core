@@ -6,6 +6,7 @@ build-backend = "setuptools.build_meta"
 name = "pythonbots-core"
 dynamic = ["version"]
 description = "Core library of PythonBots Discord bots: source-available, use licence."
+readme = "README.md"
 requires-python = ">=3.12"
 authors = [{name = "Luca Sacchi Ricciardi"}]
 license = "LicenseRef-PythonBots-Core"

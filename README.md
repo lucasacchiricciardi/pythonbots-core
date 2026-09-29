@@ -6,7 +6,7 @@ signature verification, a handler registry driven by declarations, per-handler d
 what is running.
 
 **Source-available, not open source. Running it requires a licence issued with an order.**
-See [`LICENSE`](LICENSE).
+See [`LICENSE`](https://github.com/lucasacchiricciardi/pythonbots-core/blob/main/LICENSE).
 
 ## Install
 
@@ -22,7 +22,7 @@ the wheel's sha256 next to the package.
 At startup, and on `/about`, the core writes one line:
 
 ```
-core 0.1.0 · fine vita 2028-09-28 · licenza <order> · manifesto integro · impronta <sha256 of MANIFEST> · wheel <sha256 of the installed wheel>
+core <version> · fine vita <end of life> · licenza <order> · manifesto integro · impronta <sha256 of MANIFEST> · wheel <sha256 of the installed wheel>
 ```
 
 - `MANIFEST` lists the sha256 of every file in the package; a changed byte is reported with the
@@ -41,4 +41,4 @@ Publishing and a reviewed environment.
 
 This repository receives an export of the package at each release; development happens
 elsewhere. Issues are welcome. Code contributions are not accepted — see
-[`CONTRIBUTING.md`](CONTRIBUTING.md). Security reports: [`SECURITY.md`](SECURITY.md).
+[`CONTRIBUTING.md`](https://github.com/lucasacchiricciardi/pythonbots-core/blob/main/CONTRIBUTING.md). Security reports: [`SECURITY.md`](https://github.com/lucasacchiricciardi/pythonbots-core/blob/main/SECURITY.md).

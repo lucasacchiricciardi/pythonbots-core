@@ -5,6 +5,13 @@ All notable changes to `pythonbots-core` are documented here. The format follows
 
 ## [unreleased]
 
+## [0.1.1] - 2026-09-29
+
+### Fixed
+
+- Publish the project description on PyPI: 0.1.0 shipped without one, and a published release
+  cannot be amended.
+
 ## [0.1.0] - 2026-09-28
 
 _First public release._
