@@ -5,6 +5,21 @@ All notable changes to `pythonbots-core` are documented here. The format follows
 
 ## [unreleased]
 
+## [0.1.5] - 2026-09-29
+
+### Changed
+
+- `/i-miei-dati` sends a summary in the message and the complete copy as an attached JSON file,
+  instead of a list cut at 2000 characters.
+
+### Added
+
+- `risposta.file(chiave, nome, contenuto)` for replies with an attached file, and
+  `messaggio.limite_allegati` from Discord's `attachment_size_limit`.
+- One-time download links for copies larger than an attachment: `PB_URL_PUBBLICO` sets the base; the
+  link expires after 15 minutes and works once. Opening it shows a button, so link previews do not
+  use it up.
+
 ## [0.1.4] - 2026-09-29
 
 ### Fixed

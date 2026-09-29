@@ -12,6 +12,7 @@ class Messaggio:
     mittente: str = ""
     conversazione: str = ""
     allegati: tuple = ()
+    limite_allegati: int = 0
 
 
 @dataclass(frozen=True)
@@ -23,6 +24,7 @@ class Azione:
     testo_degradato: str = ""
     testo: str = ""
     valori: tuple = ()
+    allegato: tuple = ()
 
 
 class Risposta:
@@ -40,6 +42,11 @@ class Risposta:
 
     def pulsanti(self, chiave: str, opzioni, **valori) -> None:
         self._azioni.append(Azione(chiave, opzioni=tuple(opzioni), valori=tuple(sorted(valori.items()))))
+
+    def file(self, chiave: str, nome: str, contenuto: bytes, privata: bool = True, **valori) -> None:
+        """A message with an attached file; private by default."""
+        self._azioni.append(Azione(chiave, privata=privata, valori=tuple(sorted(valori.items())),
+                                   allegato=(nome, bytes(contenuto))))
 
     def fatto(self, chiave: str, testo: str, privata: bool = True) -> None:
         """A fact rather than a phrase; the text is computed, not translated."""

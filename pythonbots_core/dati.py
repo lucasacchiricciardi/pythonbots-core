@@ -1,8 +1,10 @@
 """What a handler sees of the database; its own tables only, identifiers pseudonymised."""
 from __future__ import annotations
 
+import os
 import re
 
+from pythonbots_core import copie
 from pythonbots_core.deposito import Deposito, campi_da_api
 from pythonbots_core.diritti import cancella as _cancella_persona
 from pythonbots_core.diritti import PERSONA, _campi, esporta, possiede
@@ -38,7 +40,18 @@ class Dati:
     def cancella_i_miei(self) -> dict[str, int]:
         """Delete what the bot keeps on the person who sent the command; rows removed, by table."""
         chi = self._chi() if not self._nessuno_conserva_persone() else None
-        return _cancella_persona(self._d, self._tutte, chi) if chi else {}
+        if not chi:
+            return {}
+        tolte = _cancella_persona(self._d, self._tutte, chi)
+        copie.cancella_persona(self._d, chi)
+        return tolte
+
+    def link_mia_copia(self) -> str | None:
+        """A one-time link to download one's own copy, or None if the bot does not know its address."""
+        base = os.environ.get("PB_URL_PUBBLICO", "").rstrip("/")
+        if not base:
+            return None
+        return f"{base}/api/copia/{copie.crea(self._d, self._chi())}"
 
     def _tabella(self, tabella: str) -> set[str]:
         if not isinstance(tabella, str) or not _NOME.match(tabella):

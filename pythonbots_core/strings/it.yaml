@@ -1,3 +1,8 @@
 core.comando-sconosciuto: "Comando non riconosciuto."
 
 core.occupato: "Il bot è occupato in questo momento: riprova fra qualche secondo."
+
+core.copia-titolo: "La copia dei tuoi dati"
+core.copia-spiegazione: "Il pulsante scarica un file con i dati che il bot conserva su di te. Il link funziona una volta sola."
+core.copia-pulsante: "Scarica i miei dati"
+core.copia-non-valida: "Questo link non è valido: è già stato usato, è scaduto, oppure non è mai esistito. Chiedi di nuovo la copia al bot."

@@ -52,3 +52,11 @@ def cancella(deposito, dichiarazioni: list[dict], persona: str) -> dict[str, int
                 fatto[t] = quante
     deposito.conferma()
     return fatto
+
+
+def copia_json(fuori: dict) -> bytes:
+    """The copy as JSON, by table, without the pseudonym; one function for the attachment and the link."""
+    import json
+    pulito = {t: [{k: v for k, v in r.items() if k != PERSONA} for r in righe]
+              for t, righe in sorted(fuori.items())}
+    return json.dumps(pulito, ensure_ascii=False, indent=2, default=str).encode("utf-8")
