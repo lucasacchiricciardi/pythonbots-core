@@ -13,8 +13,9 @@ The latest release. Clients receive corrective updates on the terms of their ord
 ## What the package does and does not do
 
 - The Discord interactions endpoint verifies the Ed25519 signature over timestamp and body on
-  every request and rejects anything unsigned or altered. It keeps no replay window: a captured
-  request repeated unchanged verifies again, as it would on any Discord interactions endpoint.
+  every request and rejects anything unsigned or altered. It also rejects a request whose signed
+  timestamp is more than five minutes away from the bot's clock, and an interaction it has already
+  run: a captured request repeated unchanged is refused.
 - The package never reads a secret with a default value: a missing environment variable stops
   the process at startup and says which one.
 - Integrity is detected, not enforced: a modified installation keeps running and reports the

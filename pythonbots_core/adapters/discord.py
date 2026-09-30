@@ -18,6 +18,10 @@ EFFIMERO = 64
 
 CHIAVE_NON_MIO = "core.comando-sconosciuto"
 
+FINESTRA_SECONDI = 300
+
+_TIMESTAMP = __import__("re").compile(r"^[0-9]{1,12}$")
+
 FILE = "_file"
 
 
@@ -48,7 +52,9 @@ class Discord:
 
     capacita = Capacita(pulsanti=True, privato=True)
 
-    def __init__(self, chiave_pubblica: str) -> None:
+    def __init__(self, chiave_pubblica: str, adesso=None) -> None:
+        import time
+        self._adesso = adesso or time.time
         self._verifica = VerifyKey(bytes.fromhex(chiave_pubblica))
 
     def _controlla_firma(self, corpo: bytes, testate) -> None:
@@ -60,6 +66,8 @@ class Discord:
             self._verifica.verify(timestamp.encode() + corpo, bytes.fromhex(firma))
         except (BadSignatureError, ValueError) as e:
             raise FirmaNonValida("firma non valida") from e
+        if not _TIMESTAMP.match(timestamp) or abs(self._adesso() - int(timestamp)) > FINESTRA_SECONDI:
+            raise FirmaNonValida("richiesta fuori dalla finestra di freschezza")
 
     def ricevi(self, registro, corpo: bytes, testate, stringhe, battito=None, deposito=None) -> dict:
         """One Discord request to the response to return; raises when it is not Discord's."""
@@ -69,6 +77,10 @@ class Discord:
         evento = json.loads(corpo)
         if evento.get("type") == PING:
             return PONG
+        if deposito is not None and evento.get("id"):
+            from pythonbots_core.ripetute import gia_vista
+            if gia_vista(deposito, evento["id"], self._adesso()):
+                raise FirmaNonValida("interazione gia' eseguita")
 
         messaggio = self._traduci(evento)
         azioni = instrada(registro, messaggio, self.capacita, stringhe, battito, deposito)

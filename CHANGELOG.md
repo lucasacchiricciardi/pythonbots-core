@@ -5,6 +5,16 @@ All notable changes to `pythonbots-core` are documented here. The format follows
 
 ## [unreleased]
 
+## [0.1.7] - 2026-09-30
+
+### Fixed
+
+- The bot token no longer reaches the internet-facing endpoint: `compose.yml` empties it for the
+  `bot` service, the endpoint refuses to start if it finds it, and commands are registered from the
+  `lavori` container (`docker compose exec lavori python3 deploy/registra_comandi.py`).
+- A signed request counts once: requests whose timestamp is more than five minutes from the bot's
+  clock, and interactions already run, are refused with 401.
+
 ## [0.1.6] - 2026-09-30
 
 ### Added
