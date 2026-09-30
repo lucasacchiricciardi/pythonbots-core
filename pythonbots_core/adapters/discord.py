@@ -89,6 +89,8 @@ class Discord:
             mittente=str(utente.get("id", "")),
             conversazione=str(evento.get("channel_id", "")),
             limite_allegati=int(evento.get("attachment_size_limit") or 0),
+            opzioni=tuple(sorted((o["name"], o.get("value")) for o in
+                                 (evento.get("data") or {}).get("options") or [] if "name" in o)),
         )
 
     @staticmethod

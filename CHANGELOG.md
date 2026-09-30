@@ -5,6 +5,19 @@ All notable changes to `pythonbots-core` are documented here. The format follows
 
 ## [unreleased]
 
+## [0.1.6] - 2026-09-30
+
+### Added
+
+- Scheduled jobs: a handler declares a `programma` (every N minutes, or at HH:MM on chosen days in
+  the declared time zone) and a `lavora` function; a separate `lavori` container runs them and posts
+  their text to channels named in `bot/config.yaml`. Mentions in job text do not notify anyone.
+- `/api/battito` reports the last successful run of each job, and stays `vivo` when the database
+  cannot be read.
+- Command options: a handler declares `opzioni` per command (text, integer, yes/no, user), reads them
+  with `messaggio.opzione(nome)`, and `registra_comandi.py` registers them with Discord. Names, count,
+  order and description length are checked before registering.
+
 ## [0.1.5] - 2026-09-29
 
 ### Changed

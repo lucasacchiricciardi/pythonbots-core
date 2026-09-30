@@ -13,6 +13,11 @@ class Messaggio:
     conversazione: str = ""
     allegati: tuple = ()
     limite_allegati: int = 0
+    opzioni: tuple = ()
+
+    def opzione(self, nome: str, predefinito=None):
+        """The value of option `nome`, or the default when the user did not give it."""
+        return dict(self.opzioni).get(nome, predefinito)
 
 
 @dataclass(frozen=True)

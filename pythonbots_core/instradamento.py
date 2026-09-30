@@ -12,9 +12,11 @@ class Registro:
         self._per_trigger: dict[str, tuple[str, object]] = {}
         self._chiavi: set[str] = set()
         self._dichiarazioni: list[dict] = []
+        self._lavora: dict = {}
 
     def aggiungi(self, nome: str, trigger, gestisci, chiavi_stringhe=(),
-                 dichiarazione=None) -> None:
+                 dichiarazione=None, lavora=None) -> None:
+        self._lavora[nome] = lavora
         for t in trigger:
             self._per_trigger[t] = (nome, gestisci)
         self._chiavi.update(chiavi_stringhe)
@@ -39,6 +41,16 @@ class Registro:
         if voce is None:
             return None
         return next((d for d in self._dichiarazioni if d.get("nome") == voce[0]), None)
+
+    def lavori(self) -> list[tuple[str, dict, object]]:
+        """(handler, schedule entry, lavora function) for every declared job, in order."""
+        return [(d["nome"], v, self._lavora.get(d["nome"]))
+                for d in self._dichiarazioni for v in d.get("programma") or []]
+
+    def opzioni(self, comando: str) -> list[dict]:
+        """The options declared for this command, in declaration order; empty if none."""
+        d = self.dichiarazione(comando) or {}
+        return list((d.get("opzioni") or {}).get(comando, []))
 
     def cerca(self, comando: str):
         """The handler for this command, or None."""
@@ -70,5 +82,5 @@ class Registro:
             if not d or not callable(gestisci):
                 continue
             r.aggiungi(d["nome"], d.get("trigger", ()), gestisci,
-                       d.get("chiavi_stringhe", ()), d)
+                       d.get("chiavi_stringhe", ()), d, getattr(modulo, "lavora", None))
         return r
