@@ -60,3 +60,68 @@ def copia_json(fuori: dict) -> bytes:
     pulito = {t: [{k: v for k, v in r.items() if k != PERSONA} for r in righe]
               for t, righe in sorted(fuori.items())}
     return json.dumps(pulito, ensure_ascii=False, indent=2, default=str).encode("utf-8")
+
+
+DICHIARAZIONE = {
+    "nome": "diritti",
+    "piattaforme": ["discord"],
+    "trigger": ["/i-miei-dati", "/cancellami"],
+    "permessi": [],
+    "input_esterni": [],
+    "dati_memorizzati": [],
+    "chiavi_stringhe": ["diritti.copia", "diritti.copia-link", "diritti.copia-troppo-grande",
+                        "diritti.cancellato", "diritti.nulla-da-mostrare", "diritti.nulla-da-cancellare"],
+    "prese": [],
+    "lavoro": False,
+}
+
+NOME_COPIA = "i-miei-dati.json"
+
+
+def _riassunto(fuori: dict) -> str:
+    """One line per table with its row count; it goes in the text, the data in the file."""
+    return "\n".join(f"- {t}: {len(fuori[t])}" for t in sorted(fuori))
+
+
+def gestisci(messaggio, risposta, dati):
+    """The commands /i-miei-dati and /cancellami, always private."""
+    if messaggio.comando == "/cancellami":
+        tolte = sum(dati.cancella_i_miei().values())
+        if tolte:
+            risposta.privata("diritti.cancellato", quante=tolte)
+        else:
+            risposta.privata("diritti.nulla-da-cancellare")
+        return
+    fuori = dati.miei_dati()
+    if not fuori:
+        risposta.privata("diritti.nulla-da-mostrare")
+        return
+    riassunto, contenuto = _riassunto(fuori), copia_json(fuori)
+    if messaggio.limite_allegati and len(contenuto) > messaggio.limite_allegati:
+        link = dati.link_mia_copia()
+        if link:
+            risposta.privata("diritti.copia-link", riassunto=riassunto, link=link)
+        else:
+            risposta.privata("diritti.copia-troppo-grande", riassunto=riassunto)
+        return
+    risposta.file("diritti.copia", NOME_COPIA, contenuto, riassunto=riassunto)
+
+
+def con_i_diritti(dichiarazioni: list) -> list:
+    """The delivered bot's declarations; the client's handlers plus the rights one."""
+    if any(d.get("nome") == DICHIARAZIONE["nome"] for d in dichiarazioni):
+        return list(dichiarazioni)
+    return list(dichiarazioni) + [DICHIARAZIONE]
+
+
+def registra(registro) -> None:
+    """Add /i-miei-dati and /cancellami to the registry; stop if a client handler already declares them."""
+    for t in DICHIARAZIONE["trigger"]:
+        gia = registro.dichiarazione(t)
+        if registro.cerca(t) is not None:
+            nome = gia["nome"] if gia else "?"
+            raise RuntimeError(
+                f"l'handler `{nome}` del bot dichiara {t}, che dalla 0.1.8 e' un comando del core: "
+                f"togli `bot/handlers/{nome}.py` (vedi la nota di aggiornamento della 0.1.8).")
+    registro.aggiungi(DICHIARAZIONE["nome"], DICHIARAZIONE["trigger"], gestisci,
+                      DICHIARAZIONE["chiavi_stringhe"], DICHIARAZIONE)

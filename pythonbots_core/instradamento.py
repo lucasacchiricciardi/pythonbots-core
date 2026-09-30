@@ -65,6 +65,8 @@ class Registro:
         albero = Path(albero)
         r = cls.da_cartella(albero / "bot" / "handlers")
         registra(r, cartella(), albero)
+        from pythonbots_core.diritti import registra as registra_diritti
+        registra_diritti(r)
         return r
 
     @classmethod

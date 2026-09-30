@@ -171,13 +171,14 @@ def genera_da_albero(albero, ordine: dict, destinazione) -> list[str]:
     """The pages, generated from the handlers' declarations and the order data."""
     from pathlib import Path as _P
 
+    from pythonbots_core.diritti import con_i_diritti
     from pythonbots_core.informativa import genera as _genera_informativa
     from pythonbots_core.instradamento import Registro
 
     registro = Registro.da_cartella(_P(albero) / "bot" / "handlers")
     accesi = {"informativa": True, "termini": True, **(ordine.get("documenti") or {})}
     informativa_md = _genera_informativa(
-        registro.dichiarazioni(), ordine["bot"], ordine["contatto"],
+        con_i_diritti(registro.dichiarazioni()), ordine["bot"], ordine["contatto"],
         ordine.get("titolare", {})) if accesi["informativa"] else None
     termini_md = None
     if accesi["termini"]:

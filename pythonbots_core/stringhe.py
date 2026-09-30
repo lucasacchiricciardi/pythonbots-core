@@ -42,7 +42,7 @@ class Stringhe:
 CARTELLA_CORE = Path(__file__).resolve().parent / "strings"
 
 
-def _leggi(p: Path) -> dict:
+def _leggi(p: Path, vuoto_ammesso: bool = False) -> dict:
     """One file to a dict, with an error that says what is wrong for each way to fail."""
     if not p.is_file():
         raise FileNotFoundError(
@@ -50,6 +50,8 @@ def _leggi(p: Path) -> dict:
             f"sue frasi non e' un bot che parla inglese, e' un bot rotto.")
 
     caricato = yaml.safe_load(p.read_text(encoding="utf-8"))
+    if caricato is None and vuoto_ammesso:
+        return {}
     if caricato is None:
         raise ValueError(f"`{p}` e' vuoto: nessuna stringa da usare.")
     if not isinstance(caricato, dict):
@@ -79,5 +81,5 @@ def carica(cartella_bot, lingua: str = "it") -> Stringhe:
     """The core's phrases plus the bot's, with the latter taking precedence."""
     voci = _leggi(CARTELLA_CORE / f"{lingua}.yaml")
     cartella = Path(cartella_bot)
-    voci.update(_leggi(cartella / f"{lingua}.yaml" if cartella.is_dir() else cartella))
+    voci.update(_leggi(cartella / f"{lingua}.yaml" if cartella.is_dir() else cartella, vuoto_ammesso=True))
     return Stringhe(voci, lingua)
