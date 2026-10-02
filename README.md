@@ -5,7 +5,8 @@ signature verification, a handler registry driven by declarations, per-handler d
 (export and delete), a heartbeat, an integrity manifest, and an `/about` command that reports
 what is running.
 
-**Source-available, not open source. Running it requires a licence issued with an order.**
+**Source-available, not open source. You may read it and run it for a short evaluation;
+any other use requires a licence issued with an order.**
 See [`LICENSE`](https://github.com/lucasacchiricciardi/pythonbots-core/blob/main/LICENSE).
 
 ## Install

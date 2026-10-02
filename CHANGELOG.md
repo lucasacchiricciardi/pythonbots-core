@@ -5,6 +5,25 @@ All notable changes to `pythonbots-core` are documented here. The format follows
 
 ## [unreleased]
 
+## [0.1.9] - 2026-10-02
+
+_Upgrade: the wheel only. Optionally, set the image tag in `deploy/compose.yml` to `:0.1.9`, so
+that `docker images` tells which core runs._
+
+### Changed
+
+- The licence is version 0.2 (`LICENSE`). It has two layers: anyone with a copy may read and study
+  the source and run it for a 30-day evaluation; running it for anything else needs the licence
+  issued with an order and recorded in its `LICENSE-ADDENDUM`. Support and the minimum period of
+  corrective updates now count from the order's first delivery, so a redelivery no longer extends
+  them. The licensor's contact for written notices is in Section 12.
+- In a delivery, `deploy/compose.yml` tags the images with the core version it ships
+  (`pythonbots/<instance>:0.1.8`), so `docker images` tells which core runs. Until now the tag was
+  `0.1.0` whatever the version. The wheel is unchanged.
+- The update instructions (delivery README and wiki) end by checking that `/api/battito` answers 200:
+  a reverse proxy that resolves container names only when it starts keeps sending `/api` to the old
+  container after a rebuild.
+
 ## [0.1.8] - 2026-09-30
 
 _Upgrade: besides the wheel, replace `deploy/endpoint.py`, `deploy/lavori.py` and
